@@ -147,17 +147,17 @@ If you want to use this feature, please use 'diff-dir' command instead of 'diff-
     │         ├── test001
     │         │    └── Book1.pdf -> Perform comparing
     │         ├── test002
-    │         │    └── Book1.pdf -> Perform comparing
+    │         │    └── Book2.pdf -> Perform comparing
     │         └── test003
-    │              └── Book2.pdf -> Skip comparing
+    │              └── Book3.pdf -> Skip comparing
     └── expected
          └── XxxTest
               ├── test001
               │    └── Book1.pdf -> Perform comparing
               ├── test002
-              │    └── Book1.pdf -> Perform comparing
+              │    └── Book2.pdf -> Perform comparing
               └── test004
-                   └── Book3.pdf -> Skip comparing
+                   └── Book4.pdf -> Skip comparing
 ```
 
 ### Skip comparing
