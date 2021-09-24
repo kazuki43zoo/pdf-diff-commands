@@ -60,14 +60,10 @@ public class DiffDirProcessor {
 
       targetFiles.forEach((x, y) -> DiffFileProcessor.INSTANCE.execute(x.toString(), y.toString(), errorLogDelayPrinters, properties, "diff-dir-report-" + timestamp + x.getParent().toString().replace(dir1.toString(), "")));
 
-      if (!dir1Files.isEmpty()) {
-        dir1Files.values().stream().map(Path::toString).sorted()
-            .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in second-dir. file[{}]", x));
-      }
-      if (!dir2Files.isEmpty()) {
-        dir2Files.values().stream().map(Path::toString).sorted()
-            .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in first-dir. file[{}]", x));
-      }
+      dir1Files.values().stream().map(Path::toString).sorted()
+          .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in second-dir. file[{}]", x));
+      dir2Files.values().stream().map(Path::toString).sorted()
+          .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in first-dir. file[{}]", x));
 
       if (dir1Files.isEmpty() && dir2Files.isEmpty() && errorLogDelayPrinters.isEmpty()) {
         LOGGER.info("The pdf content that stored into directory is all same. first-dir[{}] second-dir[{}]", dirPath1, dirPath2);
