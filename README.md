@@ -148,9 +148,9 @@ or
 2021-09-24 21:13:02.050  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in first-dir. file[src/test/resources/pattern1/expected/XxxTest/test004/Book3.pdf]
 ```
 
-### knowledge
+## knowledge
 
-## How to specify ignore range
+### How to specify ignore range
 
 You can specify pixel range to be ignored using configuration arguments(`--tools.pdf.ignore-ranges=1/850:250/890:290`).
 
