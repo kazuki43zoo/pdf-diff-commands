@@ -69,7 +69,7 @@ public class DiffFileProcessor {
           continue;
         }
 
-        Path diffFile = Files.createTempFile(file1.getFileName().toString().replace(".pdf", "") + "-diff-page-" + (i + 1) + "-", ".png");
+        Path diffFile = Files.createTempFile(file1.getFileName().toString().replace(".pdf", "") + "-diff-page-" + pagePosition + "-", ".png");
         boolean matched = true;
         try (OutputStream diffOutStream = Files.newOutputStream(diffFile)) {
           for (int x = 0; x < image1.getWidth(); x++) {
