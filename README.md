@@ -73,8 +73,8 @@ Support following features.
   --tools.pdf.diff-color    : customize a color for emphasizing the difference (default: MAGENTA)
   --tools.pdf.ignore-ranges : specify pixel range to be ignored (default: N/A)
                               value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}
-                              e.g.) --tools.pdf.ignore-ranges[0]=1/850:250/900:300
-                                       ignore range(width:850-900pix height:250-300pix) on first page
+                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:290
+                                       ignore range(width:850-890pix height:250-290pix) on first page
 
 [Usage: diff-file]
   Checking difference for pdf content after converting to image file.
@@ -104,6 +104,8 @@ $ ./mvnw clean verify -DskipTests
 $ java -jar target/pdf-diff-commands-0.0.1-SNAPSHOT.jar
 ```
 
+## Reporting
+
 ### Reporting when content is same
 
 This tool report a following information log when two pdf content is same.
@@ -127,12 +129,12 @@ This tool change a pixel color of difference as follows:
 
 ![sample different report file](./images/sample-diff-report-file.png "sample different report file")
 
-### Bulk comparing
+## Bulk comparing
 
 This tool support the bulk comparing by specifying two directories.
 If you want to use this feature, please use 'diff-dir' command instead of 'diff-file' command.
 
-#### Skip comparing
+### Skip comparing
 
 This tool skip comparing pdf content when pdf file does not exist into both directories. If comparing was skipped, it output following warning log.
 
@@ -145,3 +147,11 @@ or
 ```
 2021-09-24 21:13:02.050  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in first-dir. file[src/test/resources/pattern1/expected/XxxTest/test004/Book3.pdf]
 ```
+
+### knowledge
+
+## How to specify ignore range
+
+You can specify pixel range to be ignored using configuration arguments(`--tools.pdf.ignore-ranges=1/850:250/890:290`).
+
+![how to specify ignore range](./images/how-to-specify-ignore-range.png "how to specify ignore range")
