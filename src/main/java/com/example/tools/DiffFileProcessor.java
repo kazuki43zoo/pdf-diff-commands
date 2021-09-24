@@ -23,19 +23,19 @@ public class DiffFileProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiffFileProcessor.class);
   static final DiffFileProcessor INSTANCE = new DiffFileProcessor();
 
-  void execute(String filePath1, String filePath2, List<Runnable> errorMessagePrinters, PdfDiffCommandsProperties properties) {
+  void execute(String filePath1, String filePath2, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
 
     LOGGER.info("Start to compare pdf content. first-file[{}] second-file[{}]", filePath1, filePath2);
 
     Path file1 = Paths.get(filePath1);
     Path file2 = Paths.get(filePath2);
     if (!file1.toFile().exists()) {
-      errorMessagePrinters.add(() -> LOGGER.error("The first file does not exists. file-path[{}]", filePath1));
+      errorLogDelayPrinters.add(() -> LOGGER.error("The first file does not exists. file-path[{}]", filePath1));
     }
     if (!file2.toFile().exists()) {
-      errorMessagePrinters.add(() -> LOGGER.error("The second file does not exists. file-path[{}}]", filePath2));
+      errorLogDelayPrinters.add(() -> LOGGER.error("The second file does not exists. file-path[{}}]", filePath2));
     }
-    if (!errorMessagePrinters.isEmpty()) {
+    if (!errorLogDelayPrinters.isEmpty()) {
       return;
     }
 
@@ -43,7 +43,7 @@ public class DiffFileProcessor {
          PDDocument document1 = PDDocument.load(inputStream1); PDDocument document2 = PDDocument.load(inputStream2)) {
 
       if (document1.getNumberOfPages() != document2.getNumberOfPages()) {
-        errorMessagePrinters.add(() -> LOGGER.error("The page size is different. first-file[{}] second-file[{}]", document1.getNumberOfPages(), document2.getNumberOfPages()));
+        errorLogDelayPrinters.add(() -> LOGGER.error("The page size is different. first-file[{}] second-file[{}]", document1.getNumberOfPages(), document2.getNumberOfPages()));
         return;
       }
 
@@ -58,14 +58,14 @@ public class DiffFileProcessor {
         BufferedImage image1 = renderer1.renderImageWithDPI(i, properties.getImageDpi(), properties.getImageType());
         BufferedImage image2 = renderer2.renderImageWithDPI(i, properties.getImageDpi(), properties.getImageType());
 
-        int errorSizeAtBeginForPageProcessing = errorMessagePrinters.size();
+        int errorSizeAtBeginForPageProcessing = errorLogDelayPrinters.size();
         if (image1.getWidth() != image2.getWidth()) {
-          errorMessagePrinters.add(() -> LOGGER.error("The page width is different. page[{}] first-file[{}] second-file[{}]", pagePosition, image1.getWidth(), image2.getWidth()));
+          errorLogDelayPrinters.add(() -> LOGGER.error("The page width is different. page[{}] first-file[{}] second-file[{}]", pagePosition, image1.getWidth(), image2.getWidth()));
         }
         if (image1.getHeight() != image2.getHeight()) {
-          errorMessagePrinters.add(() -> LOGGER.error("The page height is different. page[{}] first-file[{}] second-file[{}]", pagePosition, image1.getHeight(), image2.getHeight()));
+          errorLogDelayPrinters.add(() -> LOGGER.error("The page height is different. page[{}] first-file[{}] second-file[{}]", pagePosition, image1.getHeight(), image2.getHeight()));
         }
-        if (errorMessagePrinters.size() != errorSizeAtBeginForPageProcessing) {
+        if (errorLogDelayPrinters.size() != errorSizeAtBeginForPageProcessing) {
           continue;
         }
 
@@ -90,7 +90,7 @@ public class DiffFileProcessor {
           Files.delete(diffFile);
         } else {
           Path diffReportFile = Paths.get("target", "diff-report", diffFile.getFileName().toString());
-          errorMessagePrinters.add(() -> LOGGER.error("The page content is different. page[{}] diff-report-file[{}] first-file[{}] second-file[{}]", pagePosition, diffReportFile, filePath1, filePath2));
+          errorLogDelayPrinters.add(() -> LOGGER.error("The page content is different. page[{}] diff-report-file[{}] first-file[{}] second-file[{}]", pagePosition, diffReportFile, filePath1, filePath2));
           Files.createDirectories(diffReportFile.getParent());
           Files.move(diffFile, diffReportFile);
         }
@@ -101,7 +101,7 @@ public class DiffFileProcessor {
       throw new IllegalStateException(e);
     }
 
-    if (errorMessagePrinters.isEmpty()) {
+    if (errorLogDelayPrinters.isEmpty()) {
       LOGGER.info("The pdf content is same. first-file[{}] second-file[{}]", filePath1, filePath2);
     }
 

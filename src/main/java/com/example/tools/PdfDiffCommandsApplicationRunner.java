@@ -46,20 +46,20 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       throw new IllegalArgumentException("'command' is required. valid-commands:[diff-file]");
     }
 
-    List<Runnable> errorMessages = new ArrayList<>();
-    execute(command, args, errorMessages);
-    errorMessages.forEach(Runnable::run);
+    List<Runnable> errorLogDelayPrinters = new ArrayList<>();
+    execute(command, args, errorLogDelayPrinters);
+    errorLogDelayPrinters.forEach(Runnable::run);
 
   }
 
-  private void execute(String command, ApplicationArguments args, List<Runnable> errorMessages) {
+  private void execute(String command, ApplicationArguments args, List<Runnable> errorLogDelayPrinters) {
     switch (command) {
       case "diff-file":
         List<String> nonOptionValues = args.getNonOptionArgs();
         if (nonOptionValues.size() < 2) {
           throw new IllegalArgumentException("{files} need two files.");
         }
-        DiffFileProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), errorMessages, properties);
+        DiffFileProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), errorLogDelayPrinters, properties);
         break;
       default:
         throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[diff-file]"));
