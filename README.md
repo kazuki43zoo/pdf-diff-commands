@@ -8,8 +8,8 @@ Support following features.
 
 * Checking difference for two pdf files after converting to image file
 * Can perform bulk comparing for two directories
-* Can specify pixel range to be ignored
-* Can compare by ignore dynamic part on file name on bulk comparing
+* Can specify pixel range to be ignored a difference
+* Can compare by ignore dynamic part(e.g. date string, random string, etc...) on file name on bulk comparing
 
 ## How to run
 
@@ -129,7 +129,7 @@ This tool report a following error log when two pdf content is different.
 2021-09-24 12:32:28.639 ERROR 13088 --- [           main] com.example.tools.DiffFileProcessor      : The page content is different. page[1] diff-report-file[target/diff-report/Book1-diff-page-1-1799135128573901411.png] first-file[src/test/resources/Book1.pdf] second-file[src/test/resources/Book3.pdf]
 ```
 
-Please open diff-report-file using image viewer.
+Please open diff-report-file using favorite image viewer.
 This tool change a pixel color of difference as follows:
 
 ![sample different report file](./images/sample-diff-report-file.png "sample different report file")
