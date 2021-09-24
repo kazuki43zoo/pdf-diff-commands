@@ -9,7 +9,7 @@ Support following features.
 * Checking difference for two pdf files after converting to image file
 * Can perform bulk comparing for two directories
 * Can specify pixel range to be ignored a difference
-* Can compare by ignore dynamic part(e.g. date string, random string, etc...) on file name on bulk comparing
+* Can compare by ignore dynamic part(e.g. date string, random string, sequence string, etc...) on file name on bulk comparing
 
 ## How to run
 
