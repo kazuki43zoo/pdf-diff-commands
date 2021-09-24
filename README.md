@@ -178,14 +178,14 @@ or
 
 ### How to specify ignore range
 
-You can specify pixel range to be ignored using configuration arguments( e.g.) `--tools.pdf.ignore-ranges=1/850:250/890:290`).
+You can specify pixel range to be ignored using configuration arguments( e.g. `--tools.pdf.ignore-ranges=1/850:250/890:290`).
 
 ![how to specify ignore range](./images/how-to-specify-ignore-range.png "how to specify ignore range")
 
 ### How to ignore dynamic part on file name
 
 By default, this tool use the physical file name for searching comparison target file.
-But it can be changed using configuration arguments( e.g.) `--pattern='(Book)(.).*(\.pdf)'`).
+But it can be changed using configuration arguments( e.g. `--pattern='(Book)(.).*(\.pdf)'`).
 When you specify `--pattern` option, you can search a comparison target file using the logical file name that extracted using regex pattern.
 
 ```
