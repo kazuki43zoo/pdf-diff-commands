@@ -2,6 +2,7 @@ package com.example.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -15,13 +16,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DiffDirProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DiffDirProcessor.class);
   static final DiffDirProcessor INSTANCE = new DiffDirProcessor();
 
-  void execute(String dirPath1, String dirPath2, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
+  void execute(String dirPath1, String dirPath2, String patternString, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
 
     LOGGER.info("Start to compare pdf content that stored into directory. first-dir[{}] second-dir[{}]", dirPath1, dirPath2);
 
@@ -38,16 +41,16 @@ public class DiffDirProcessor {
     }
 
     String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuuMMddHHmmss"));
-
+    Pattern fileNameExtractPattern = StringUtils.hasLength(patternString) ? Pattern.compile(patternString) : null;
     try {
       Map<String, Path> dir1Files = new LinkedHashMap<>();
       Files.walk(dir1)
           .filter(Files::isRegularFile)
-          .forEach(x -> dir1Files.put(x.toString().replace(dir1.toString(), ""), x));
+          .forEach(x -> dir1Files.put(Paths.get(x.getParent().toString().replace(dir1.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
       Map<String, Path> dir2Files = new LinkedHashMap<>();
       Files.walk(dir2)
           .filter(Files::isRegularFile)
-          .forEach(x -> dir2Files.put(x.toString().replace(dir2.toString(), ""), x));
+          .forEach(x -> dir2Files.put(Paths.get(x.getParent().toString().replace(dir2.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
 
       Set<String> intersectionFileNames = new LinkedHashSet<>(dir1Files.keySet());
       intersectionFileNames.retainAll(dir2Files.keySet());
@@ -73,6 +76,22 @@ public class DiffDirProcessor {
       throw new UncheckedIOException(e);
     }
 
+  }
+
+  private String extractFileName(String originalFileName, Pattern extractPattern) {
+    if (extractPattern == null) {
+      return originalFileName;
+    }
+    Matcher matcher = extractPattern.matcher(originalFileName);
+    StringBuilder sb = new StringBuilder();
+    if (matcher.matches()) {
+      for (int i = 0; i < matcher.groupCount(); i++) {
+        sb.append(matcher.group(i + 1));
+      }
+      return sb.toString();
+    } else {
+      return originalFileName;
+    }
   }
 
 }

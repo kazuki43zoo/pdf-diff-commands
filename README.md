@@ -9,6 +9,7 @@ Support following features.
 * Checking difference for two pdf files after converting to image file
 * Can perform bulk comparing for two directories
 * Can specify pixel range to be ignored using configuration arguments
+* Can compare by ignore dynamic part on file name on bulk comparing
 
 ## How to run
 
@@ -86,8 +87,9 @@ Support following features.
 
 [Usage: diff-dir]
   Checking difference for pdf content that stored into a specified directory after converting to image file.
-  format: --command=diff-dir {directories}
+  format: --command=diff-dir (--pattern='{file name extracting regex pattern}') {directories}
   e.g.) --command=diff-dir src/test/resources/pattern1/actual src/test/resources/pattern1/expected
+  e.g.) --command=diff-dir --pattern='(Book)(.).*(\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected
 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -137,24 +139,68 @@ This tool change a pixel color of difference as follows:
 This tool support the bulk comparing by specifying two directories.
 If you want to use this feature, please use 'diff-dir' command instead of 'diff-file' command.
 
+```
+...
+└─ pattern2
+    ├── actual
+    │    └── XxxTest
+    │         ├── test001
+    │         │    └── Book1.pdf -> Perform comparing
+    │         ├── test002
+    │         │    └── Book1.pdf -> Perform comparing
+    │         └── test003
+    │              └── Book2.pdf -> Skip comparing
+    └── expected
+         └── XxxTest
+              ├── test001
+              │    └── Book1.pdf -> Perform comparing
+              ├── test002
+              │    └── Book1.pdf -> Perform comparing
+              └── test004
+                   └── Book3.pdf -> Skip comparing
+```
+
 ### Skip comparing
 
 This tool skip comparing pdf content when pdf file does not exist into both directories. If comparing was skipped, it output following warning log.
 
 ```
-2021-09-24 21:13:02.049  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in second-dir. file[src/test/resources/pattern1/actual/XxxTest/test003/Book2.pdf]
+2021-09-24 21:13:02.049  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in second-dir. file[src/test/resources/pattern1/actual/XxxTest/test003/Book3.pdf]
 ```
 
 or
 
 ```
-2021-09-24 21:13:02.050  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in first-dir. file[src/test/resources/pattern1/expected/XxxTest/test004/Book3.pdf]
+2021-09-24 21:13:02.050  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in first-dir. file[src/test/resources/pattern1/expected/XxxTest/test004/Book4.pdf]
 ```
 
-## knowledge
+## Knowledge
 
 ### How to specify ignore range
 
-You can specify pixel range to be ignored using configuration arguments(`--tools.pdf.ignore-ranges=1/850:250/890:290`).
+You can specify pixel range to be ignored using configuration arguments( e.g.) `--tools.pdf.ignore-ranges=1/850:250/890:290`).
 
 ![how to specify ignore range](./images/how-to-specify-ignore-range.png "how to specify ignore range")
+
+### How to ignore dynamic part on file name
+
+By default, this tool use the physical file name for searching comparison target file.
+But it can be changed using configuration arguments( e.g.) `--pattern='(Book)(.).*(\.pdf)'`).
+When you specify `--pattern` option, you can search a comparison target file using the logical file name that extracted using regex pattern.
+
+```
+...
+└─ pattern2
+    ├── actual
+    │    └── XxxTest
+    │         ├── test001
+    │         │    └── Book1_20210924134559.pdf -> translate to 'Book1.pdf' as logical file name
+    │         └── test002
+    │              └── Book2_20210924134659.pdf -> translate to 'Book2.pdf' as logical file name
+    └── expected
+         └── XxxTest
+              ├── test001
+              │    └── Book1_20210923134559.pdf -> translate to 'Book1.pdf' as logical file name
+              └── test002
+                   └── Book2_20210923154559.pdf -> translate to 'Book2.pdf' as logical file name
+```
