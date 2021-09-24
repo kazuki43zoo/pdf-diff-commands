@@ -8,7 +8,7 @@ Support following features.
 
 * Checking difference for two pdf files after converting to image file
 * Can perform bulk comparing for two directories
-* Can specify pixel range to be ignored using configuration arguments
+* Can specify pixel range to be ignored
 * Can compare by ignore dynamic part on file name on bulk comparing
 
 ## How to run
