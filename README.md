@@ -72,9 +72,12 @@ Support following features.
   --tools.pdf.image-type    : customize an image type when converting to image file (default: RGB)
   --tools.pdf.diff-color    : customize a color for emphasizing the difference (default: MAGENTA)
   --tools.pdf.ignore-ranges : specify pixel range to be ignored (default: N/A)
+                              if you want to specify multiple range, please separate configuration using ','.
                               value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}
                               e.g.) --tools.pdf.ignore-ranges=1/850:250/890:290
                                        ignore range(width:850-890pix height:250-290pix) on first page
+                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:290,1/1050:250/1090:390
+                                       ignore ranges(width:850-890pix height:250-290pix, width:1050-1090pix height:250-290pix) on first page
 
 [Usage: diff-file]
   Checking difference for pdf content after converting to image file.

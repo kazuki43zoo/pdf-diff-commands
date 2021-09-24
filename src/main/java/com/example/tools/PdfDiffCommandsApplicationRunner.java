@@ -30,9 +30,12 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  --tools.pdf.image-type    : customize an image type when converting to image file (default: RGB)");
       System.out.println("  --tools.pdf.diff-color    : customize a color for emphasizing the difference (default: MAGENTA)");
       System.out.println("  --tools.pdf.ignore-ranges : specify pixel range to be ignored (default: N/A)");
+      System.out.println("                              if you want to specify multiple range, please separate configuration using ','.");
       System.out.println("                              value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}");
-      System.out.println("                              e.g.) --tools.pdf.ignore-ranges[0]=1/850:250/890:390");
+      System.out.println("                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:390");
       System.out.println("                                       ignore range(width:850-890pix height:250-290pix) on first page");
+      System.out.println("                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:390,1/1050:250/1090:390");
+      System.out.println("                                       ignore ranges(width:850-890pix height:250-290pix, width:1050-1090pix height:250-290pix) on first page");
       System.out.println();
       System.out.println("[Usage: diff-file]");
       System.out.println("  Checking difference for pdf content after converting to image file.");
