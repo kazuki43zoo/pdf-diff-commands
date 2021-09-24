@@ -6,7 +6,7 @@ Diff display utilities for pdf file.
 
 Support following features.
 
-* Diff two files.
+* Checking difference for two pdf file after converting to image file
 
 ## How to run
 
