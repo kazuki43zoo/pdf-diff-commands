@@ -92,3 +92,26 @@ $ ./mvnw clean verify -DskipTests
 ```
 $ java -jar target/pdf-diff-commands-0.0.1-SNAPSHOT.jar
 ```
+
+### Reporting when content is same
+
+This tool report a following information log when two pdf content is same.
+
+```
+...
+2021-09-24 12:31:20.896  INFO 13075 --- [           main] com.example.tools.DiffFileProcessor      : The pdf content is same. first-file[src/test/resources/Book2.pdf] second-file[src/test/resources/Book3.pdf]
+```
+
+### Reporting when content is different
+
+This tool report a following error log when two pdf content is different.
+
+```
+...
+2021-09-24 12:32:28.639 ERROR 13088 --- [           main] com.example.tools.DiffFileProcessor      : The page content is different. page[1] diff-report-file[target/diff-report/Book1-diff-page-1-1799135128573901411.png] first-file[src/test/resources/Book1.pdf] second-file[src/test/resources/Book3.pdf]
+```
+
+Please open diff-report-file that output to `./target/diff-report` directory using image viewer.
+This tool change a pixel color of difference as follows:
+
+![sample different report file](./images/sample-diff-report-file.png "sample different report file")
