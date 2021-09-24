@@ -23,10 +23,11 @@ public class DiffFileProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiffFileProcessor.class);
   static final DiffFileProcessor INSTANCE = new DiffFileProcessor();
 
-  void execute(String filePath1, String filePath2, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
+  void execute(String filePath1, String filePath2, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties, String diffReportDir) {
 
     LOGGER.info("Start to compare pdf content. first-file[{}] second-file[{}]", filePath1, filePath2);
 
+    int errorSizeAtBegin = errorLogDelayPrinters.size();
     Path file1 = Paths.get(filePath1);
     Path file2 = Paths.get(filePath2);
     if (!file1.toFile().exists()) {
@@ -35,7 +36,7 @@ public class DiffFileProcessor {
     if (!file2.toFile().exists()) {
       errorLogDelayPrinters.add(() -> LOGGER.error("The second file does not exists. file-path[{}}]", filePath2));
     }
-    if (!errorLogDelayPrinters.isEmpty()) {
+    if (errorLogDelayPrinters.size() != errorSizeAtBegin) {
       return;
     }
 
@@ -52,6 +53,8 @@ public class DiffFileProcessor {
 
       PDFRenderer renderer1 = new PDFRenderer(document1);
       PDFRenderer renderer2 = new PDFRenderer(document2);
+
+      List<PdfDiffCommandsProperties.IgnoreRange> ignoreRanges = properties.toIgnoreRanges();
 
       for (int i = 0; i < document1.getNumberOfPages(); i++) {
         int pagePosition = i + 1;
@@ -77,8 +80,12 @@ public class DiffFileProcessor {
               int color1 = image1.getRGB(x, y);
               int color2 = image2.getRGB(x, y);
               if (color1 != color2) {
-                matched = false;
-                image1.setRGB(x, y, diffColor.getRGB());
+                int xPosition = x;
+                int yPosition = y;
+                if (ignoreRanges.stream().noneMatch(ignoreRange -> ignoreRange.contains(pagePosition, xPosition, yPosition))) {
+                  matched = false;
+                  image1.setRGB(x, y, diffColor.getRGB());
+                }
               }
             }
           }
@@ -89,7 +96,7 @@ public class DiffFileProcessor {
         if (matched) {
           Files.delete(diffFile);
         } else {
-          Path diffReportFile = Paths.get("target", "diff-report", diffFile.getFileName().toString());
+          Path diffReportFile = Paths.get("target", diffReportDir, diffFile.getFileName().toString());
           errorLogDelayPrinters.add(() -> LOGGER.error("The page content is different. page[{}] diff-report-file[{}] first-file[{}] second-file[{}]", pagePosition, diffReportFile, filePath1, filePath2));
           Files.createDirectories(diffReportFile.getParent());
           Files.move(diffFile, diffReportFile);
@@ -101,7 +108,7 @@ public class DiffFileProcessor {
       throw new IllegalStateException(e);
     }
 
-    if (errorLogDelayPrinters.isEmpty()) {
+    if (errorLogDelayPrinters.size() == errorSizeAtBegin) {
       LOGGER.info("The pdf content is same. first-file[{}] second-file[{}]", filePath1, filePath2);
     }
 
