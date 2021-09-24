@@ -3,8 +3,6 @@ package com.example.tools;
 import org.apache.pdfbox.rendering.ImageType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.awt.*;
-
 @ConfigurationProperties(prefix = "tools.pdf")
 public class PdfDiffCommandsProperties {
   private float imageDpi = 300;
