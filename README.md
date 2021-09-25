@@ -143,7 +143,7 @@ If you want to use this feature, please use 'diff-dir' command instead of 'diff-
 ```
 ...
 └─ pattern2
-    ├── actual
+    ├── actual <-- Can specify as comparing target directory
     │    └── XxxTest
     │         ├── test001
     │         │    └── Book1.pdf -> Perform comparing
@@ -151,7 +151,7 @@ If you want to use this feature, please use 'diff-dir' command instead of 'diff-
     │         │    └── Book2.pdf -> Perform comparing
     │         └── test003
     │              └── Book3.pdf -> Skip comparing
-    └── expected
+    └── expected <-- Can specify as comparing target directory
          └── XxxTest
               ├── test001
               │    └── Book1.pdf -> Perform comparing
@@ -192,13 +192,13 @@ When you specify `--file-name-pattern` option, you can search a comparison targe
 ```
 ...
 └─ pattern2
-    ├── actual
+    ├── actual <-- Specify as comparing target directory
     │    └── XxxTest
     │         ├── test001
     │         │    └── Book1_20210924134559.pdf -> translate to 'Book1.pdf' as logical file name
     │         └── test002
     │              └── Book2_20210924134659.pdf -> translate to 'Book2.pdf' as logical file name
-    └── expected
+    └── expected <-- Specify as comparing target directory
          └── XxxTest
               ├── test001
               │    └── Book1_20210923134559.pdf -> translate to 'Book1.pdf' as logical file name
