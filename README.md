@@ -64,30 +64,37 @@ Support following features.
 2021-09-24 11:33:58.959  INFO 12743 --- [           main] c.e.tools.PdfDiffCommandsApplication     : Started PdfDiffCommandsApplication in 0.825 seconds (JVM running for 1.206)
 
 [Command arguments]
-  --command       : diff-file, diff-dir
-  --h (--help)    : print help
+  --command
+       diff-file, diff-dir
+  --h (--help)
+       print help
 
 [Configuration arguments(Optional)]
-  --tools.pdf.image-dpi     : customize an image dpi when converting to image file (default: 300)
-                              note that if big value specified, processing time become a too long.
-  --tools.pdf.image-type    : customize an image type when converting to image file (default: RGB)
-  --tools.pdf.diff-color    : customize a color for emphasizing the difference (default: MAGENTA)
-  --tools.pdf.output-dir    : customize a output directory of reporting file (default: ./target)
-  --tools.pdf.ignore-ranges : specify pixel range to be ignored (default: N/A)
-                              if you want to specify multiple range, please separate configuration using ','.
-                              value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}
-                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:290
-                                       ignore range(width:850-890pix height:250-290pix) on first page
-                              e.g.) --tools.pdf.ignore-ranges=1/850:250/890:290,1/1050:250/1090:390
-                                       ignore ranges(width:850-890pix height:250-290pix, width:1050-1090pix height:250-290pix) on first page
+  --tools.pdf.image-dpi
+       customize an image dpi when converting to image file (default: 300)
+       note that if big value specified, processing time become a too long.
+  --tools.pdf.image-type
+       customize an image type when converting to image file (default: RGB)
+  --tools.pdf.diff-color
+       customize a color for emphasizing the difference (default: MAGENTA)
+  --tools.pdf.output-dir
+       customize a output directory of reporting file (default: ./target)
+  --tools.pdf.ignore-ranges
+       specify pixel range to be ignored (default: N/A)
+       if you want to specify multiple range, please separate configuration using ','.
+       value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}
+       e.g.) --tools.pdf.ignore-ranges=1/850:250/890:390
+                 ignore range(width:850-890pix height:250-290pix) on first page
+       e.g.) --tools.pdf.ignore-ranges=1/850:250/890:390,1/1050:250/1090:390
+                 ignore ranges(width:850-890pix height:250-290pix, width:1050-1090pix height:250-290pix) on first page
 
 [Usage: diff-file]
-  Checking difference for pdf content after converting to image file.
+  checking difference for pdf content after converting to image file.
   format: --command=diff-file {files}
   e.g.) --command=diff-file src/test/resources/Book2.pdf src/test/resources/Book3.pdf
 
 [Usage: diff-dir]
-  Checking difference for pdf content that stored into a specified directory after converting to image file.
+  checking difference for pdf content that stored into a specified directory after converting to image file.
   format: --command=diff-dir (--file-name-pattern='{file name extracting regex pattern}') {directories}
   e.g.) --command=diff-dir src/test/resources/pattern1/actual src/test/resources/pattern1/expected
   e.g.) --command=diff-dir --file-name-pattern='(Book)(.).*(\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected
