@@ -7,7 +7,7 @@ Diff display utilities for pdf file.
 Support following features.
 
 * Checking difference for two pdf files after converting to image file
-* Can perform bulk comparing for two directories
+* Can perform bulk comparing for two directories that has same directory structures
 * Can specify pixel range to be ignored a difference
 * Can compare by ignore dynamic part(e.g. date string, random string, sequence string, etc...) on file name on bulk comparing
 
@@ -137,7 +137,7 @@ This tool change a pixel color of difference as follows:
 
 ## Bulk comparing
 
-This tool support the bulk comparing by specifying two directories.
+This tool support the bulk comparing by specifying two directories that has same directory structures.
 If you want to use this feature, please use 'diff-dir' command instead of 'diff-file' command.
 
 ```
