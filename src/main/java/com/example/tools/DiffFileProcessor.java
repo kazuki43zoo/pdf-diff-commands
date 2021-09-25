@@ -96,7 +96,7 @@ public class DiffFileProcessor {
         if (matched) {
           Files.delete(diffFile);
         } else {
-          Path diffReportFile = Paths.get("target", diffReportDir, diffFile.getFileName().toString());
+          Path diffReportFile = properties.getOutputDir().resolve(Paths.get(diffReportDir, diffFile.getFileName().toString()));
           errorLogDelayPrinters.add(() -> LOGGER.error("The page content is different. page[{}] diff-report-file[{}] first-file[{}] second-file[{}]", pagePosition, diffReportFile, filePath1, filePath2));
           Files.createDirectories(diffReportFile.getParent());
           Files.move(diffFile, diffReportFile);

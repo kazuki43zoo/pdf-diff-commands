@@ -29,6 +29,7 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("                              note that if big value specified, processing time become a too long.");
       System.out.println("  --tools.pdf.image-type    : customize an image type when converting to image file (default: RGB)");
       System.out.println("  --tools.pdf.diff-color    : customize a color for emphasizing the difference (default: MAGENTA)");
+      System.out.println("  --tools.pdf.output-dir    : customize a output directory of reporting file (default: ./target)");
       System.out.println("  --tools.pdf.ignore-ranges : specify pixel range to be ignored (default: N/A)");
       System.out.println("                              if you want to specify multiple range, please separate configuration using ','.");
       System.out.println("                              value format: {target page}/{start width position(pix)}:{start height position(pix)}/{end width position(pix)}:{end height position(pix)}");

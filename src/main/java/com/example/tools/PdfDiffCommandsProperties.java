@@ -4,6 +4,8 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +15,7 @@ public class PdfDiffCommandsProperties {
   private float imageDpi = 300;
   private ImageType imageType = ImageType.RGB;
   private String diffColor = "MAGENTA";
+  private Path outputDir = Paths.get("target");
   private final List<String> ignoreRanges = new ArrayList<>();
 
   public float getImageDpi() {
@@ -37,6 +40,14 @@ public class PdfDiffCommandsProperties {
 
   public void setDiffColor(String diffColor) {
     this.diffColor = diffColor;
+  }
+
+  public Path getOutputDir() {
+    return outputDir;
+  }
+
+  public void setOutputDir(Path outputDir) {
+    this.outputDir = outputDir;
   }
 
   public List<String> getIgnoreRanges() {
