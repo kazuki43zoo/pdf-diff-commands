@@ -44,9 +44,9 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       System.out.println();
       System.out.println("[Usage: diff-dir]");
       System.out.println("  Checking difference for pdf content that stored into a specified directory after converting to image file.");
-      System.out.println("  format: --command=diff-dir (--pattern='{file name extracting regex pattern}') {directories}");
+      System.out.println("  format: --command=diff-dir (--file-name-pattern='{file name extracting regex pattern}') {directories}");
       System.out.println("  e.g.) --command=diff-dir src/test/resources/pattern1/actual src/test/resources/pattern1/expected");
-      System.out.println("  e.g.) --command=diff-dir --pattern='(Book)(.).*(\\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected");
+      System.out.println("  e.g.) --command=diff-dir --file-name-pattern='(Book)(.).*(\\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected");
       System.out.println();
       return;
     }
@@ -78,8 +78,8 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
         if (nonOptionValues.size() < 2) {
           throw new IllegalArgumentException("{directories} need two directories.");
         }
-        String pattern = args.containsOption("pattern") ?
-            args.getOptionValues("pattern").stream().findFirst().orElse(null) :
+        String pattern = args.containsOption("file-name-pattern") ?
+            args.getOptionValues("file-name-pattern").stream().findFirst().orElse(null) :
             null;
         DiffDirProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), pattern, errorLogDelayPrinters, properties);
         break;

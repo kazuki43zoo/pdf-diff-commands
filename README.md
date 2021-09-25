@@ -87,9 +87,9 @@ Support following features.
 
 [Usage: diff-dir]
   Checking difference for pdf content that stored into a specified directory after converting to image file.
-  format: --command=diff-dir (--pattern='{file name extracting regex pattern}') {directories}
+  format: --command=diff-dir (--file-name-pattern='{file name extracting regex pattern}') {directories}
   e.g.) --command=diff-dir src/test/resources/pattern1/actual src/test/resources/pattern1/expected
-  e.g.) --command=diff-dir --pattern='(Book)(.).*(\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected
+  e.g.) --command=diff-dir --file-name-pattern='(Book)(.).*(\.pdf)' src/test/resources/pattern2/actual src/test/resources/pattern2/expected
 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -185,8 +185,8 @@ You can specify pixel range to be ignored using configuration arguments( e.g. `-
 ### How to ignore dynamic part on file name
 
 By default, this tool use the physical file name for searching comparison target file.
-But it can be changed using configuration arguments( e.g. `--pattern='(Book)(.).*(\.pdf)'`).
-When you specify `--pattern` option, you can search a comparison target file using the logical file name that extracted using regex pattern.
+But it can be changed using configuration arguments( e.g. `--file-name-pattern='(Book)(.).*(\.pdf)'`).
+When you specify `--file-name-pattern` option, you can search a comparison target file using the logical file name that extracted using regex pattern.
 
 ```
 ...
