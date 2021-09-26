@@ -23,9 +23,7 @@ public class DiffFileProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiffFileProcessor.class);
   static final DiffFileProcessor INSTANCE = new DiffFileProcessor();
 
-  void execute(String filePath1, String filePath2, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties, String diffReportDir) {
-
-    LOGGER.info("Start to compare pdf content. first-file[{}] second-file[{}]", filePath1, filePath2);
+  void execute(String filePath1, String filePath2, List<Runnable> infoLogDelayPrinters, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties, String diffReportDir) {
 
     int errorSizeAtBegin = errorLogDelayPrinters.size();
     Path file1 = Paths.get(filePath1);
@@ -39,6 +37,8 @@ public class DiffFileProcessor {
     if (errorLogDelayPrinters.size() != errorSizeAtBegin) {
       return;
     }
+
+    LOGGER.info("Start to compare pdf content. first-file[{}] second-file[{}]", filePath1, filePath2);
 
     try (InputStream inputStream1 = Files.newInputStream(file1); InputStream inputStream2 = Files.newInputStream(file2);
          PDDocument document1 = PDDocument.load(inputStream1); PDDocument document2 = PDDocument.load(inputStream2)) {
@@ -109,8 +109,10 @@ public class DiffFileProcessor {
     }
 
     if (errorLogDelayPrinters.size() == errorSizeAtBegin) {
-      LOGGER.info("The pdf content is same. first-file[{}] second-file[{}]", filePath1, filePath2);
+      infoLogDelayPrinters.add(() -> LOGGER.info("The pdf content is same. first-file[{}] second-file[{}]", filePath1, filePath2));
     }
+
+    LOGGER.info("End to compare pdf content.");
 
   }
 

@@ -1,7 +1,10 @@
 package com.example.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,22 +12,30 @@ import java.util.List;
 
 @Component
 public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdfDiffCommandsApplicationRunner.class);
 
   private final PdfDiffCommandsProperties properties;
+  private final ExitCodeManager exitCodeManager;
 
-  public PdfDiffCommandsApplicationRunner(PdfDiffCommandsProperties properties) {
+  public PdfDiffCommandsApplicationRunner(PdfDiffCommandsProperties properties, ExitCodeManager exitCodeManager) {
     this.properties = properties;
+    this.exitCodeManager = exitCodeManager;
   }
 
   @Override
   public void run(ApplicationArguments args) {
     if (args.getSourceArgs().length == 0 || args.containsOption("h") || args.containsOption("help")) {
-      System.out.println("");
+      System.out.println();
       System.out.println("[Command arguments]");
       System.out.println("  --command");
       System.out.println("       diff-file, diff-dir");
       System.out.println("  --h (--help)");
       System.out.println("       print help");
+      System.out.println();
+      System.out.println("[Exit Code]");
+      System.out.println("  0 : There is no difference");
+      System.out.println("  1 : There is no difference but there are skipped files");
+      System.out.println("  2 : There is difference");
       System.out.println();
       System.out.println("[Configuration arguments(Optional)]");
       System.out.println("  --tools.pdf.image-dpi");
@@ -67,20 +78,37 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       throw new IllegalArgumentException("'command' is required. valid-commands:[diff-file]");
     }
 
+    List<Runnable> infoLogDelayPrinters = new ArrayList<>();
+    List<Runnable> warnLogDelayPrinters = new ArrayList<>();
     List<Runnable> errorLogDelayPrinters = new ArrayList<>();
-    execute(command, args, errorLogDelayPrinters);
-    errorLogDelayPrinters.forEach(Runnable::run);
+    try {
+      LOGGER.info("----- Start comparing -------");
+      execute(command, args, infoLogDelayPrinters, warnLogDelayPrinters, errorLogDelayPrinters);
+    } finally {
+      LOGGER.info("----- End comparing -------");
+      LOGGER.info("----- Start reporting -------");
+      infoLogDelayPrinters.forEach(Runnable::run);
+      warnLogDelayPrinters.forEach(Runnable::run);
+      errorLogDelayPrinters.forEach(Runnable::run);
+      LOGGER.info("----- End reporting -------");
+    }
+    if (!warnLogDelayPrinters.isEmpty()) {
+      exitCodeManager.registerExitCode(1);
+    }
+    if (!errorLogDelayPrinters.isEmpty()) {
+      exitCodeManager.registerExitCode(2);
+    }
 
   }
 
-  private void execute(String command, ApplicationArguments args, List<Runnable> errorLogDelayPrinters) {
+  private void execute(String command, ApplicationArguments args, List<Runnable> infoLogDelayPrinters, List<Runnable> warnLogDelayPrinters, List<Runnable> errorLogDelayPrinters) {
     List<String> nonOptionValues = args.getNonOptionArgs();
     switch (command) {
       case "diff-file":
         if (nonOptionValues.size() < 2) {
           throw new IllegalArgumentException("{files} need two files.");
         }
-        DiffFileProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), errorLogDelayPrinters, properties, "diff-report");
+        DiffFileProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), infoLogDelayPrinters, errorLogDelayPrinters, properties, "diff-report");
         break;
       case "diff-dir":
         if (nonOptionValues.size() < 2) {
@@ -89,10 +117,27 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
         String pattern = args.containsOption("file-name-pattern") ?
             args.getOptionValues("file-name-pattern").stream().findFirst().orElse(null) :
             null;
-        DiffDirProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), pattern, errorLogDelayPrinters, properties);
+        DiffDirProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), pattern, infoLogDelayPrinters, warnLogDelayPrinters, errorLogDelayPrinters, properties);
         break;
       default:
         throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[diff-file, diff-dir]"));
     }
   }
+
+  @Component
+  static class ExitCodeManager implements ExitCodeGenerator {
+
+    private int exitCode;
+
+    public void registerExitCode(int exitCode) {
+      this.exitCode = exitCode;
+    }
+
+    @Override
+    public int getExitCode() {
+      return exitCode;
+    }
+
+  }
+
 }

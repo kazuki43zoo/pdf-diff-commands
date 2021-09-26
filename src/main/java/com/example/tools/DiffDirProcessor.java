@@ -24,9 +24,7 @@ public class DiffDirProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiffDirProcessor.class);
   static final DiffDirProcessor INSTANCE = new DiffDirProcessor();
 
-  void execute(String dirPath1, String dirPath2, String patternString, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
-
-    LOGGER.info("Start to compare pdf content that stored into directory. first-dir[{}] second-dir[{}]", dirPath1, dirPath2);
+  void execute(String dirPath1, String dirPath2, String patternString, List<Runnable> infoLogDelayPrinters, List<Runnable> warnLogDelayPrinters, List<Runnable> errorLogDelayPrinters, PdfDiffCommandsProperties properties) {
 
     Path dir1 = Paths.get(dirPath1);
     Path dir2 = Paths.get(dirPath2);
@@ -61,16 +59,21 @@ public class DiffDirProcessor {
       intersectionFileNames.forEach(dir1Files::remove);
       intersectionFileNames.forEach(dir2Files::remove);
 
-      targetFiles.forEach((x, y) -> DiffFileProcessor.INSTANCE.execute(x.toString(), y.toString(), errorLogDelayPrinters, properties, "diff-dir-report-" + timestamp + x.getParent().toString().replace(dir1.toString(), "")));
+      LOGGER.info("Start to compare pdf content that stored into directory. first-dir[{}] second-dir[{}] comparing-file-count[{}] skipping-file-count[{}]", dirPath1, dirPath2, targetFiles.size(), dir1Files.size() + dir2Files.size());
+
+      targetFiles.forEach((x, y) -> DiffFileProcessor.INSTANCE.execute(x.toString(), y.toString(), infoLogDelayPrinters, errorLogDelayPrinters, properties, "diff-dir-report-" + timestamp + x.getParent().toString().replace(dir1.toString(), "")));
 
       dir1Files.values().stream().map(Path::toString).sorted()
-          .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in second-dir. file[{}]", x));
+          .forEach(x -> warnLogDelayPrinters.add(() -> LOGGER.warn("Skip to compare pdf content because file not exist in second-dir. file[{}]", x)));
       dir2Files.values().stream().map(Path::toString).sorted()
-          .forEach(x -> LOGGER.warn("Skip to compare pdf content because file not exist in first-dir. file[{}]", x));
+          .forEach(x -> warnLogDelayPrinters.add(() -> LOGGER.warn("Skip to compare pdf content because file not exist in first-dir. file[{}]", x)));
 
-      if (dir1Files.isEmpty() && dir2Files.isEmpty() && errorLogDelayPrinters.isEmpty()) {
-        LOGGER.info("The pdf content that stored into directory is all same. first-dir[{}] second-dir[{}]", dirPath1, dirPath2);
+      if (warnLogDelayPrinters.isEmpty() && errorLogDelayPrinters.isEmpty()) {
+        infoLogDelayPrinters.add(() -> LOGGER.info("The pdf content that stored into directory is all same. first-dir[{}] second-dir[{}]", dirPath1, dirPath2));
       }
+
+      LOGGER.info("End to compare pdf content that stored into directory.");
+
 
     } catch (IOException e) {
       throw new UncheckedIOException(e);

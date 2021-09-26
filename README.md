@@ -69,6 +69,11 @@ Support following features.
   --h (--help)
        print help
 
+[Exit Code]
+  0 : There is no difference
+  1 : There is no difference but there are skipped files
+  2 : There is difference
+
 [Configuration arguments(Optional)]
   --tools.pdf.image-dpi
        customize an image dpi when converting to image file (default: 300)
