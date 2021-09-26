@@ -70,9 +70,11 @@ Support following features.
        print help
 
 [Exit Code]
-  0 : There is no difference
-  1 : There is no difference but there are skipped files
-  2 : There is difference
+  0 : There is no difference (normal end)
+  1 : Was occurred an application error
+  2 : Command arguments invalid
+  3 : There is no difference but there are skipped files
+  4 : There is difference
 
 [Configuration arguments(Optional)]
   --tools.pdf.image-dpi

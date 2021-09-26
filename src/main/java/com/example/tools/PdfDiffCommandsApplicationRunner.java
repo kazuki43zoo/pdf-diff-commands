@@ -33,9 +33,11 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("       print help");
       System.out.println();
       System.out.println("[Exit Code]");
-      System.out.println("  0 : There is no difference");
-      System.out.println("  1 : There is no difference but there are skipped files");
-      System.out.println("  2 : There is difference");
+      System.out.println("  0 : There is no difference (normal end)");
+      System.out.println("  1 : Was occurred an application error");
+      System.out.println("  2 : Command arguments invalid");
+      System.out.println("  3 : There is no difference but there are skipped files");
+      System.out.println("  4 : There is difference");
       System.out.println();
       System.out.println("[Configuration arguments(Optional)]");
       System.out.println("  --tools.pdf.image-dpi");
@@ -86,17 +88,19 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       execute(command, args, infoLogDelayPrinters, warnLogDelayPrinters, errorLogDelayPrinters);
     } finally {
       LOGGER.info("----- End comparing -------");
-      LOGGER.info("----- Start reporting -------");
-      infoLogDelayPrinters.forEach(Runnable::run);
-      warnLogDelayPrinters.forEach(Runnable::run);
-      errorLogDelayPrinters.forEach(Runnable::run);
-      LOGGER.info("----- End reporting -------");
+      if (!infoLogDelayPrinters.isEmpty() || !warnLogDelayPrinters.isEmpty() || !errorLogDelayPrinters.isEmpty()) {
+        LOGGER.info("----- Start reporting -------");
+        infoLogDelayPrinters.forEach(Runnable::run);
+        warnLogDelayPrinters.forEach(Runnable::run);
+        errorLogDelayPrinters.forEach(Runnable::run);
+        LOGGER.info("----- End reporting -------");
+      }
     }
     if (!warnLogDelayPrinters.isEmpty()) {
-      exitCodeManager.registerExitCode(1);
+      exitCodeManager.registerExitCode(3);
     }
     if (!errorLogDelayPrinters.isEmpty()) {
-      exitCodeManager.registerExitCode(2);
+      exitCodeManager.registerExitCode(4);
     }
 
   }
@@ -106,13 +110,17 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
     switch (command) {
       case "diff-file":
         if (nonOptionValues.size() < 2) {
-          throw new IllegalArgumentException("{files} need two files.");
+          exitCodeManager.registerExitCode(2);
+          LOGGER.warn("command arguments {files} need two files.");
+          return;
         }
         DiffFileProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), infoLogDelayPrinters, errorLogDelayPrinters, properties, "diff-report");
         break;
       case "diff-dir":
         if (nonOptionValues.size() < 2) {
-          throw new IllegalArgumentException("{directories} need two directories.");
+          exitCodeManager.registerExitCode(2);
+          LOGGER.warn("command arguments {directories} need two directories.");
+          return;
         }
         String pattern = args.containsOption("file-name-pattern") ?
             args.getOptionValues("file-name-pattern").stream().findFirst().orElse(null) :
@@ -120,7 +128,8 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
         DiffDirProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), pattern, infoLogDelayPrinters, warnLogDelayPrinters, errorLogDelayPrinters, properties);
         break;
       default:
-        throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[diff-file, diff-dir]"));
+        exitCodeManager.registerExitCode(2);
+        LOGGER.warn("'{}' command not support. valid-commands:{}", command, "[diff-file, diff-dir]");
     }
   }
 
