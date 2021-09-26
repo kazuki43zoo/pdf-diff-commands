@@ -11,15 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
+public class PdfDiffCommandsApplicationRunner implements ApplicationRunner, ExitCodeGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdfDiffCommandsApplicationRunner.class);
-
   private final PdfDiffCommandsProperties properties;
-  private final ExitCodeManager exitCodeManager;
+  private int exitCode;
 
-  public PdfDiffCommandsApplicationRunner(PdfDiffCommandsProperties properties, ExitCodeManager exitCodeManager) {
+  public PdfDiffCommandsApplicationRunner(PdfDiffCommandsProperties properties) {
     this.properties = properties;
-    this.exitCodeManager = exitCodeManager;
   }
 
   @Override
@@ -74,10 +72,11 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
 
     String command;
     if (args.containsOption("command")) {
-      command = args.getOptionValues("command").stream().findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("'command' value is required. valid-commands:[diff-file]"));
+      command = args.getOptionValues("command").stream().findFirst().orElse("");
     } else {
-      throw new IllegalArgumentException("'command' is required. valid-commands:[diff-file]");
+      this.exitCode = 2;
+      LOGGER.warn("command arguments {directories} need two directories.");
+      return;
     }
 
     List<Runnable> infoLogDelayPrinters = new ArrayList<>();
@@ -97,10 +96,10 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
       }
     }
     if (!warnLogDelayPrinters.isEmpty()) {
-      exitCodeManager.registerExitCode(3);
+      this.exitCode = 3;
     }
     if (!errorLogDelayPrinters.isEmpty()) {
-      exitCodeManager.registerExitCode(4);
+      this.exitCode = 4;
     }
 
   }
@@ -110,7 +109,7 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
     switch (command) {
       case "diff-file":
         if (nonOptionValues.size() < 2) {
-          exitCodeManager.registerExitCode(2);
+          this.exitCode = 2;
           LOGGER.warn("command arguments {files} need two files.");
           return;
         }
@@ -118,7 +117,7 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
         break;
       case "diff-dir":
         if (nonOptionValues.size() < 2) {
-          exitCodeManager.registerExitCode(2);
+          this.exitCode = 2;
           LOGGER.warn("command arguments {directories} need two directories.");
           return;
         }
@@ -128,25 +127,14 @@ public class PdfDiffCommandsApplicationRunner implements ApplicationRunner {
         DiffDirProcessor.INSTANCE.execute(nonOptionValues.get(0), nonOptionValues.get(1), pattern, infoLogDelayPrinters, warnLogDelayPrinters, errorLogDelayPrinters, properties);
         break;
       default:
-        exitCodeManager.registerExitCode(2);
+        this.exitCode = 2;
         LOGGER.warn("'{}' command not support. valid-commands:{}", command, "[diff-file, diff-dir]");
     }
   }
 
-  @Component
-  static class ExitCodeManager implements ExitCodeGenerator {
-
-    private int exitCode;
-
-    public void registerExitCode(int exitCode) {
-      this.exitCode = exitCode;
-    }
-
-    @Override
-    public int getExitCode() {
-      return exitCode;
-    }
-
+  @Override
+  public int getExitCode() {
+    return exitCode;
   }
 
 }
