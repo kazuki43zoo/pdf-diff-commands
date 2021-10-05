@@ -121,7 +121,7 @@ $ ./mvnw clean verify -DskipTests
 ```
 
 ```
-$ java -jar target/pdf-diff-commands-0.0.1-SNAPSHOT.jar
+$ java -jar target/pdf-diff-commands.jar
 ```
 
 ## Reporting
