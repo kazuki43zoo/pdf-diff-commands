@@ -16,14 +16,17 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Setup version
-        run: echo "::set-output name=AP_VERSION::${GITHUB_REF##*/}"
+        run: echo "::set-output name=apVersion::${GITHUB_REF##*/}"
       - name: Publish package
         run: mvn --batch-mode deploy && mkdir -p target/${AP_VERSION} && cp target/*.jar target/${AP_VERSION}/.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AP_VERSION: ${{ steps.variables.outputs.apVersion }}
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./target/${AP_VERSION}
+        env:
+          AP_VERSION: ${{ steps.variables.outputs.apVersion }}
