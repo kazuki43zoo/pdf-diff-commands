@@ -23,7 +23,7 @@ Support following features.
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] -------------------< com.example:pdf-diff-commands >--------------------
-[INFO] Building pdf-diff-commands 0.0.1-SNAPSHOT
+[INFO] Building pdf-diff-commands 0.0.2-SNAPSHOT
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
 [INFO] >>> spring-boot-maven-plugin:2.5.5:run (default-cli) > test-compile @ pdf-diff-commands >>>
@@ -50,18 +50,6 @@ Support following features.
 [INFO] 
 [INFO] --- spring-boot-maven-plugin:2.5.5:run (default-cli) @ pdf-diff-commands ---
 [INFO] Attaching agents: []
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v2.5.5)
-
-2021-09-24 11:33:58.484  INFO 12743 --- [           main] c.e.tools.PdfDiffCommandsApplication     : Starting PdfDiffCommandsApplication using Java 11.0.1 on xxx with PID 12743 (/Users/xxx/git-pub/pdf-diff-commands/target/classes started by xxx in /Users/xxx/git-pub/pdf-diff-commands)
-2021-09-24 11:33:58.487  INFO 12743 --- [           main] c.e.tools.PdfDiffCommandsApplication     : No active profile set, falling back to default profiles: default
-2021-09-24 11:33:58.959  INFO 12743 --- [           main] c.e.tools.PdfDiffCommandsApplication     : Started PdfDiffCommandsApplication in 0.825 seconds (JVM running for 1.206)
 
 [Command arguments]
   --command
