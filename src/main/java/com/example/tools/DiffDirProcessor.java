@@ -41,14 +41,8 @@ public class DiffDirProcessor {
     String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuuMMddHHmmss"));
     Pattern fileNameExtractPattern = StringUtils.hasLength(patternString) ? Pattern.compile(patternString) : null;
     try {
-      Map<String, Path> dir1Files = new LinkedHashMap<>();
-      Files.walk(dir1)
-          .filter(Files::isRegularFile)
-          .forEach(x -> dir1Files.put(Paths.get(x.getParent().toString().replace(dir1.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
-      Map<String, Path> dir2Files = new LinkedHashMap<>();
-      Files.walk(dir2)
-          .filter(Files::isRegularFile)
-          .forEach(x -> dir2Files.put(Paths.get(x.getParent().toString().replace(dir2.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
+      Map<String, Path> dir1Files = extractPdfFiles(dir1, fileNameExtractPattern);
+      Map<String, Path> dir2Files = extractPdfFiles(dir2, fileNameExtractPattern);
 
       Set<String> intersectionFileNames = new LinkedHashSet<>(dir1Files.keySet());
       intersectionFileNames.retainAll(dir2Files.keySet());
@@ -79,6 +73,15 @@ public class DiffDirProcessor {
       throw new UncheckedIOException(e);
     }
 
+  }
+
+  private Map<String, Path> extractPdfFiles(Path dir, Pattern fileNameExtractPattern) throws IOException {
+    Map<String, Path> files = new LinkedHashMap<>();
+    Files.walk(dir)
+        .filter(Files::isRegularFile)
+        .filter(x -> x.toString().toLowerCase().endsWith(".pdf"))
+        .forEach(x -> files.put(Paths.get(x.getParent().toString().replace(dir.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
+    return files;
   }
 
   private String extractFileName(String originalFileName, Pattern extractPattern) {
