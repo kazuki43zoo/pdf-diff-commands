@@ -10,6 +10,7 @@ Support following features.
 * Can perform bulk comparing for two directories that has same directory structures
 * Can specify pixel range to be ignored a difference
 * Can compare by ignore dynamic part(e.g. date string, random string, sequence string, etc...) on file name on bulk comparing
+* Support web application mode
 
 ## How to run
 
@@ -175,6 +176,22 @@ or
 
 ```
 2021-09-24 21:13:02.050  WARN 18246 --- [           main] com.example.tools.DiffDirProcessor       : Skip to compare pdf content because file not exist in first-dir. file[src/test/resources/pattern1/expected/XxxTest/test004/Book4.pdf]
+```
+
+## Using Web application
+
+You can compare PDF files using Web request.
+
+At first, you need boot this tool as web application.
+
+```
+$ java -Dspring.main.web-application-type=servlet -Dlogging.level.root=info -jar target/pdf-diff-commands.jar
+```
+
+Then, you can request for comparing pdf files as follows:
+
+```
+$ curl "http://localhost:8080/diff" -XPOST -H "Content-Type: text/plain" -d "--command=diff-dir --file-name-pattern=(Book)(.).*(\.pdf) src/test/resources/pattern2/actual src/test/resources/pattern2/expected"
 ```
 
 ## Knowledge
