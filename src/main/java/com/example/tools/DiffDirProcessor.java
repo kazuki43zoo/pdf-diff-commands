@@ -83,11 +83,14 @@ public class DiffDirProcessor {
         .filter(Files::isRegularFile)
         .filter(x -> x.toString().toLowerCase().endsWith(".pdf"))
         .sorted()
-        .forEach(x -> files.put(Paths.get(x.getParent().toString().replace(dir.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern, sameFileNameCounters)).toString(), x));
+        .forEach(x -> {
+          String dirPath = x.getParent().toString().replace(dir.toString(), "");
+          files.put(Paths.get(dirPath, extractFileName(dirPath, x.getFileName().toString(), fileNameExtractPattern, sameFileNameCounters)).toString(), x);
+        });
     return files;
   }
 
-  private String extractFileName(String originalFileName, Pattern extractPattern, Map<String, Integer> sameFileNameCounters) {
+  private String extractFileName(String dirPath, String originalFileName, Pattern extractPattern, Map<String, Integer> sameFileNameCounters) {
     String name;
     if (extractPattern == null) {
       name = originalFileName;
@@ -103,8 +106,9 @@ public class DiffDirProcessor {
         name = originalFileName;
       }
     }
-    int counter = sameFileNameCounters.getOrDefault(name, 0) + 1;
-    sameFileNameCounters.put(name, counter);
+    String counterKey = dirPath + "/" + name;
+    int counter = sameFileNameCounters.getOrDefault(counterKey, 0) + 1;
+    sameFileNameCounters.put(counterKey, counter);
     return name + "_" + counter;
   }
 
