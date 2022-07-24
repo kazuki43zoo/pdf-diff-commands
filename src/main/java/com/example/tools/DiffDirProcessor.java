@@ -106,10 +106,14 @@ public class DiffDirProcessor {
         name = originalFileName;
       }
     }
-    String counterKey = dirPath + "/" + name;
-    int counter = sameFileNameCounters.getOrDefault(counterKey, 0) + 1;
-    sameFileNameCounters.put(counterKey, counter);
-    return name + "_" + counter;
+    if (originalFileName.equals(name)) {
+      return name;
+    } else {
+      String counterKey = dirPath + "/" + name;
+      int counter = sameFileNameCounters.getOrDefault(counterKey, 0) + 1;
+      sameFileNameCounters.put(counterKey, counter);
+      return name + "_" + counter;
+    }
   }
 
 }
