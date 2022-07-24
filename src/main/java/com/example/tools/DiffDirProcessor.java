@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -77,27 +78,34 @@ public class DiffDirProcessor {
 
   private Map<String, Path> extractPdfFiles(Path dir, Pattern fileNameExtractPattern) throws IOException {
     Map<String, Path> files = new LinkedHashMap<>();
+    Map<String, Integer> sameFileNameCounters = new HashMap<>();
     Files.walk(dir)
         .filter(Files::isRegularFile)
         .filter(x -> x.toString().toLowerCase().endsWith(".pdf"))
-        .forEach(x -> files.put(Paths.get(x.getParent().toString().replace(dir.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern)).toString(), x));
+        .sorted()
+        .forEach(x -> files.put(Paths.get(x.getParent().toString().replace(dir.toString(), ""), extractFileName(x.getFileName().toString(), fileNameExtractPattern, sameFileNameCounters)).toString(), x));
     return files;
   }
 
-  private String extractFileName(String originalFileName, Pattern extractPattern) {
+  private String extractFileName(String originalFileName, Pattern extractPattern, Map<String, Integer> sameFileNameCounters) {
+    String name;
     if (extractPattern == null) {
-      return originalFileName;
-    }
-    Matcher matcher = extractPattern.matcher(originalFileName);
-    StringBuilder sb = new StringBuilder();
-    if (matcher.matches()) {
-      for (int i = 0; i < matcher.groupCount(); i++) {
-        sb.append(matcher.group(i + 1));
-      }
-      return sb.toString();
+      name = originalFileName;
     } else {
-      return originalFileName;
+      Matcher matcher = extractPattern.matcher(originalFileName);
+      StringBuilder sb = new StringBuilder();
+      if (matcher.matches()) {
+        for (int i = 0; i < matcher.groupCount(); i++) {
+          sb.append(matcher.group(i + 1));
+        }
+        name = sb.toString();
+      } else {
+        name = originalFileName;
+      }
     }
+    int counter = sameFileNameCounters.getOrDefault(name, 0) + 1;
+    sameFileNameCounters.put(name, counter);
+    return name + "_" + counter;
   }
 
 }
